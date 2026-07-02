@@ -1,77 +1,35 @@
-import csv
-from BTrees.OOBTree import OOBTree
-import timeit
+from trie import Trie
 
 
-def load_data(filename: str):
-    items = []
-    with open(filename, newline="", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            items.append(
-                {
-                    "ID": int(row["ID"]),
-                    "Name": row["Name"],
-                    "Category": row["Category"],
-                    "Price": float(row["Price"]),
-                }
-            )
-    return items
+class LongestCommonWord(Trie):
 
-
-tree = OOBTree()
-dictionary = {}
-
-
-def add_item_to_tree(item):
-    tree[item["ID"]] = {
-        "Name": item["Name"],
-        "Category": item["Category"],
-        "Price": item["Price"],
-    }
-
-
-def add_item_to_dict(item):
-    dictionary[item["ID"]] = {
-        "Name": item["Name"],
-        "Category": item["Category"],
-        "Price": item["Price"],
-    }
-
-
-def range_query_tree(min_price, max_price):
-    return [
-        (id_, data)
-        for id_, data in tree.items()
-        if min_price <= data["Price"] <= max_price
-    ]
-
-
-def range_query_dict(min_price, max_price):
-    return [
-        (id_, data)
-        for id_, data in dictionary.items()
-        if min_price <= data["Price"] <= max_price
-    ]
-
-
-def benchmark(min_price, max_price, number=100):
-    tree_time = timeit.timeit(
-        stmt=lambda: range_query_tree(min_price, max_price), number=number
-    )
-    dict_time = timeit.timeit(
-        stmt=lambda: range_query_dict(min_price, max_price), number=number
-    )
-
-    print(f"Total range_query time for OOBTree: {tree_time:.6f} seconds")
-    print(f"Total range_query time for Dict:    {dict_time:.6f} seconds")
+    def find_longest_common_word(self, strings) -> str:
+        if not isinstance(strings, list) or not strings:
+            return ""
+        if not all(isinstance(s, str) for s in strings):
+            return ""
+        for i, word in enumerate(strings):
+            self.put(word, i)
+        prefix = []
+        node = self.root
+        while len(node.children) == 1 and node.value is None:
+            char = next(iter(node.children))
+            prefix.append(char)
+            node = node.children[char]
+        return "".join(prefix)
 
 
 if __name__ == "__main__":
-    data = load_data("data/generated_items_data.csv")
+    trie = LongestCommonWord()
+    strings = ["flower", "flow", "flight"]
+    assert trie.find_longest_common_word(strings) == "fl"
 
-    for item in data:
-        add_item_to_tree(item)
-        add_item_to_dict(item)
+    trie = LongestCommonWord()
+    strings = ["interspecies", "interstellar", "interstate"]
+    assert trie.find_longest_common_word(strings) == "inters"
 
-    benchmark(100, 500, number=100)
+    trie = LongestCommonWord()
+    strings = ["dog", "racecar", "car"]
+    assert trie.find_longest_common_word(strings) == ""
+
+    print("All assertions passed!")

@@ -1,18 +1,14 @@
 [project]
-name = "goit-algo2-hw-03"
+name = "goit-algo2-hw-04"
 version = "0.1.0"
-description = "Graphs"
+description = "Trie (Prefix Tree)"
 authors = [
     {name = "bit-to-bit",email = "vasiliy.pykhteev@gmail.com"}
 ]
 license = {text = "MIT"}
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = [
-    "networkx (>=3.5,<4.0)",
-    "matplotlib (>=3.10.5,<4.0.0)",
-    "btrees (>=6.1,<7.0)"
-]
+dependencies = []
 
 
 [build-system]
